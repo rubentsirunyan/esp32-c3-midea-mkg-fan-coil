@@ -1,0 +1,133 @@
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+  includes:
+    - bunicutz_AC_common.h
+    - esp32_midea_RS485.h
+    - esp32_midea_RS485.cpp
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+  framework:
+    type: arduino
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+    mac_address:
+      name: ESP Mac Wifi Address
+  - platform: debug
+    device:
+      name: "Device Info"
+    reset_reason:
+      name: "Reset Reason"
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+
+debug:
+  update_interval: 30s
+
+
+sensor:
+- platform: wifi_signal
+  name: "ESP WiFi Signal"
+  update_interval: 60s
+- platform: uptime
+  name: Uptime Sensor
+- platform: custom
+  id: my_AC1
+  lambda: |-
+    auto my_ACSensors1 = new BunicutzACSensor2(id(my_ac_mode1),id(my_ac_fan_mode1),id(ac_set_temp1),/*id(ac_aux_heat1),id(ac_echo_sleep1),id(ac_vent1),*/id(ac_swing1),id(ac_swing_pos1)/*,id(ac_lock1)*/);
+    App.register_component(my_ACSensors1);
+    return {my_ACSensors1->ACT1Temp,
+            my_ACSensors1->ACT2ATemp,
+            // my_ACSensors1->ACT2BTemp,
+            // my_ACSensors1->ACT3Temp,
+            my_ACSensors1->ACNotResponding
+    };
+  sensors:
+  - name: "In Air Temp"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+
+  - name: "Coil A Temp"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+
+  # - name: "Coil B Temp"
+  #   unit_of_measurement: "°C"
+  #   accuracy_decimals: 0
+
+  # - name: "Outdoor Temp"
+  #   unit_of_measurement: "°C"
+  #   accuracy_decimals: 0
+
+  - name: "Com State"
+    unit_of_measurement: ""
+    accuracy_decimals: 0
+
+select:
+  - platform: template
+    name: "Mode"
+    optimistic: true
+    id: my_ac_mode1
+    options:
+      - "Off"
+      - "Auto"
+      - "Auto_Heat"
+      - "Auto_Cool"
+      - "Cool"
+      - "Dry"
+      - "Heat"
+      - "Fan"
+      - "Unknown"
+
+  - platform: template
+    name: "Fan Mode"
+    optimistic: true
+    id: my_ac_fan_mode1
+    options:
+      - "Auto"
+      - "High"
+      - "Medium"
+      - "Low"
+      - "Unknown"
+
+  - platform: template
+    name: "SwingPos"
+    optimistic: true
+    id: ac_swing_pos1
+    options:
+      - "Auto"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+
+number:
+  - platform: template
+    name: "Set Temp"
+    id: ac_set_temp1
+    optimistic: true
+    min_value: 17
+    max_value: 32
+    step: 1
+
+switch:
+  - platform: template
+    name: "Swing"
+    id: ac_swing1
+    optimistic: true
+
+button:
+  - platform: restart
+    name: "FanCoil Restart"

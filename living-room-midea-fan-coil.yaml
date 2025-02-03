@@ -1,0 +1,8 @@
+substitutions:
+  # https://esphome.io/guides/configuration-types.html#substitutions
+  device_name: living-room-midea-fan-coil            # hostname & entity_id
+  friendly_name: Living Room Midea Fan Coil        # Displayed in HA frontend
+  icon: mdi:hvac
+
+<<: !include .common.yaml
+<<: !include .esp32-c3-midea-mkg-fan-coil.yaml
