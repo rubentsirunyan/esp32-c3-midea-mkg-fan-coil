@@ -156,6 +156,10 @@ uint8_t ESP32_Midea_RS485Class::SetMode(MideaACOpModeType mode)
 {
    DesiredState.OpMode = mode; 
    DesiredState.Swing= MIDEA_SWING_OFF;
+
+   DesiredState.TimerStart = TIMER_INVALID;
+   DesiredState.TimerStop = TIMER_INVALID;
+
    UpdateNextCycle = 1;
    return 1;     
 }
@@ -278,9 +282,9 @@ void ESP32_Midea_RS485Class::Update()
       //Serial.println(d);
       SentData[9]=d;
       //set timer start
-      SentData[10] =  CalculateSetTime(State.TimerStart);      
+      SentData[10] =  TIMER_INVALID;
       //set timer stop
-      SentData[11] =  CalculateSetTime(State.TimerStop);
+      SentData[11] =  TIMER_INVALID;
       //unknown -> 0
       SentData[12] =  d;
       SentData[13] =  0xFF-SentData[1];
@@ -288,9 +292,11 @@ void ESP32_Midea_RS485Class::Update()
 
 
       if (DesiredState.OpMode == MIDEA_AC_OPMODE_OFF){
-        SentData[7] =  0;
-        SentData[10] =  0;
-        SentData[11] =  0;
+        SentData[7] = 0;
+        SentData[9] = 0;   // Clear swing value
+        SentData[10] = TIMER_INVALID;
+        SentData[11] = TIMER_INVALID;
+        SentData[12] = 0;  // Clear duplicate swing value
       }
 
       SentData[14] = CalculateCRC(TRANSMIT_CRC);
@@ -538,8 +544,8 @@ uint8_t ESP32_Midea_RS485Class::ParseResponse()
         //State.T3Temp = (ReceivedData[0x0E]-0x30)/2;
         State.Current = ReceivedData[0x0F];
         State.Unknown2 = ReceivedData[0x10];         
-        State.TimerStart = CalculateGetTime(ReceivedData[0x11]);         
-        State.TimerStop = CalculateGetTime(ReceivedData[0x12]);         
+        State.TimerStart = TIMER_INVALID;
+        State.TimerStop = TIMER_INVALID;
         State.Unknown3 = ReceivedData[0x13];         
         State.ModeFlags = ReceivedData[0x14];         
         State.OperatingFlags = ReceivedData[0x15];         

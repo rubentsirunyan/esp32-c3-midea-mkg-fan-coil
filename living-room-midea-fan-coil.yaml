@@ -3,6 +3,9 @@ substitutions:
   device_name: living-room-midea-fan-coil            # hostname & entity_id
   friendly_name: Living Room Midea Fan Coil        # Displayed in HA frontend
   icon: mdi:hvac
+  ip_address: 192.168.100.61
+  default_gateway: 192.168.100.1
+  subnet: 255.255.255.0
 
 <<: !include .common.yaml
 <<: !include .esp32-c3-midea-mkg-fan-coil.yaml
