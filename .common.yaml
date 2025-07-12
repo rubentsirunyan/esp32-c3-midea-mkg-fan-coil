@@ -26,7 +26,7 @@ ota:
     password: !secret ota_password
 
 logger:
-#  level: INFO
+  level: DEBUG
 
 time:
   - platform: homeassistant

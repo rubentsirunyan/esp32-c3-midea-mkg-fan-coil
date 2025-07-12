@@ -1,9 +1,9 @@
 substitutions:
   # https://esphome.io/guides/configuration-types.html#substitutions
-  device_name: living-room-midea-fan-coil
-  friendly_name: Living Room Midea Fan Coil
+  device_name: bedroom-midea-fan-coil
+  friendly_name: Bedroom Midea Fan Coil
   icon: mdi:hvac
-  ip_address: 192.168.100.61
+  ip_address: 192.168.100.62
   default_gateway: 192.168.100.1
   subnet: 255.255.255.0
 
